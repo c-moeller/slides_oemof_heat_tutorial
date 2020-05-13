@@ -1,0 +1,43 @@
+% \newcommand{\colA}[1]{\begin{columns}[t]\begin{column}{#1}} 
+% \newcommand{\colB}[1]{\end{column}\begin{column}{#1}} 
+% \newcommand{\colEnd}{\end{column}\end{columns}}
+
+% keine Navigationspfeile
+\setbeamertemplate{navigation symbols}{} % keine Navigations-Buttons
+
+% Fußzeile mit Titel und Seitenr.
+% \definecolor{mygray}{gray}{0.75}
+% \setbeamertemplate{footline}{{\vspace{2mm}\color{mygray}\hspace*{2mm}\tiny\inserttitle\hspace*{80pt}\hfill\insertframenumber \hspace*{2mm}\vspace{2mm}}}
+\setbeamertemplate{footline}{{\vspace{2mm}\color{gray}\hspace*{2mm}\tiny\inserttitle\hspace*{80pt}\hfill\insertframenumber \hspace*{2mm}\vspace{2mm}}}
+
+% \setbeamertemplate{footline}{
+% {%
+%     \begin{beamercolorbox}[wd=\paperwidth,ht=1.5ex,dp=20pt,leftskip=.3cm,rightskip=.3cm]{author in head/foot}
+%         \tiny\begin{tabular}[t]{@{}p{0.25\textwidth}p{0.25\textwidth}p{0.38\textwidth}@{}}
+%             Caroline Möller & & \\ 
+%             Speicherbedarf und Systemkosten in der Stromversorgung für energieautarke Regionen und Quartiere \& & \\
+%             % some third line & & 
+%         \end{tabular}
+%     \end{beamercolorbox}
+%     }}
+
+% % Schrift für URLs
+% \definecolor{myblue}{rgb}{0.2 0.0 0.8}
+% \renewcommand{\UrlFont}{\color{myblue}\footnotesize\sf}
+
+% % Schriftgröße Listings
+% \RequirePackage{fancyvrb}
+% \DefineVerbatimEnvironment{Highlighting}{Verbatim}%
+%   {commandchars=\\\{\},fontsize=\footnotesize} 
+% \DefineVerbatimEnvironment{Verbatim}{Verbatim}%
+%   {fontsize=\footnotesize}
+
+\titlegraphic{%
+    \includegraphics[width=.13\textwidth]{img/RLI_logo.pdf}\hfill
+    \includegraphics[width=.25\textwidth]{img/Beuth-Logo_basis.png}
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
