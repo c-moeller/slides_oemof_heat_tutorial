@@ -1,5 +1,5 @@
 ---
-author: Caroline Möller
+author: Caroline Möller, Franziska Pleißner, Jakob Wolf, Jann Launer, Marie-Claire Gering
 title: The oemof.thermal package
 subtitle: How to use the new thermal components
 institute: Reiner Lemoine Institut, Beuth University of Applied Sciences
