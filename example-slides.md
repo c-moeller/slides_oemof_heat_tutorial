@@ -11,73 +11,65 @@ urlcolor: blue
 
 # The oemof.thermal package
 
-- Contains thermal components for energy system optimization with oemof.solph
-  - Compression heat pump and chiller
+:::::: {.columns}
+::: {.column  width=55%}
+- Provides tools to model thermal energy components in energy system optimization as an extension of oemof.solph
   - Stratified thermal storage
   - Solar thermal collector
   - Concentrating solar power
+  - Compression heat pump and chiller
+  - To be released soon: absorption heat pump - [PR #74](https://github.com/oemof/oemof-thermal/pull/74)
+:::
 
-- To be released soon: absorption heat pump - [PR #74](https://github.com/oemof/oemof-thermal/pull/74)
-- To be released in an extra repository: district heating network (DHNx)
-
-BILD
-Beschriftung anpassen: oemof.thermal
+::: {.column  width=45%}
+\includegraphics[width=\textwidth]{img/content/oemof_solph_komponente_v3.png}
+:::
+::::::
 
 
 # How to install the oemof.thermal package
 
-pip install ....
+Install oemof.thermal by running
 
-
-# How to use the components
-
-two methods:
-- precalculation
-- facade
-
-# Compression heat pump and chillers
-
-:::::: {.columns}
-::: {.column  width=75%}
-- Explain
-- what's
-- to
-- see
-:::
-
-::: {.column  width=25%}
-\includegraphics[width=\textwidth]{img/content/heatpump_col.png}
-:::
-::::::
-
-# Compression heat pump and chillers
-
-\small
-
-~~~python
-COP = calc_cops(
-    temp_high,
-    temp_low,
-    quality_grade,
-    temp_threshold_icing,
-    consider_icing,
-    factor_icing,
-    mode
-)
+~~~bash
+pip install oemof.thermal
 ~~~
 
-\normalsize
+in your virtualenv.
 
-# Compression heat pump and chillers
+\vspace{0.4cm}
+
+In your code, you can import moduls like:
+
+~~~python
+from oemof.thermal import concentrating_solar_power
+~~~
+
+\vspace{0.4cm}
+
+Find the examples here: [https://github.com/oemof/oemof-thermal/tree/master/examples](https://github.com/oemof/oemof-thermal/tree/master/examples)
+
+\vspace{0.4cm}
+
+Find the documentation at [https://oemof-thermal.readthedocs.io](https://oemof-thermal.readthedocs.io).
+
+
+# How to use the oemof.thermal package
+
+- There are two ways:
+  - Use the oemof.thermal facades, which are based on the [oemof.tabular.facades module](https://oemof-tabular.readthedocs.io/en/stable/reference/oemof.tabular.html), for a simple way to set up an oemof.solph component for your energy system - Facades are provided for the three technologies "stratified thermal storage", "solar thermal collector" and "concentrating solar power".
+  - Use the collection of functions for each technology independently to perform pre-calculations of an optimization model or postprocess optimization results
+
 
 # Stratified thermal storage
 
 :::::: {.columns}
 ::: {.column  width=55%}
-- Explain
-- what's
-- to
-- see
+- Large-scale sensible heat storage with perfect stratification
+- Two zones with cold ($T_C$) and hot($T_H$) temperature
+- When charging/discharging the storage the thermocline moves down and up
+- Losses through the surface depend on the size of the hot and cold zone
+- For the storage investment mode, you provide a diameter, but leave height and capacity open and set expandable=True.
 :::
 
 ::: {.column  width=45%}
@@ -97,22 +89,22 @@ thermal_storage = StratifiedThermalStorage(
     label='thermal_storage',
     bus=solph.Bus('heat'),
     diameter=2,
-    height=5,
     temp_h=95,
     temp_c=60,
     temp_env=10,
     u_value=u_value,
+    expandable=True,
+    capacity_cost=50,
+    storage_capacity_cost=400,
     min_storage_level=0.05,
     max_storage_level=0.95,
-    capacity=1,
-    efficiency=0.9,
+    efficiency=0.98,
     marginal_cost=0.0001
 )
 ~~~
 
 \normalsize
 
-# Stratified thermal storage
 
 # Solar thermal collector
 
@@ -215,6 +207,42 @@ collector = Collector(
 \normalsize
 
 # Concentrating solar power
+
+
+# Compression heat pump and chillers
+
+:::::: {.columns}
+::: {.column  width=75%}
+- Explain
+- what's
+- to
+- see
+:::
+
+::: {.column  width=25%}
+\includegraphics[width=\textwidth]{img/content/heatpump_col.png}
+:::
+::::::
+
+# Compression heat pump and chillers
+
+\small
+
+~~~python
+COP = calc_cops(
+    temp_high,
+    temp_low,
+    quality_grade,
+    temp_threshold_icing,
+    consider_icing,
+    factor_icing,
+    mode
+)
+~~~
+
+\normalsize
+
+# Compression heat pump and chillers
 
 # Cogeneration: Emission allocation
 
