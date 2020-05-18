@@ -1,10 +1,10 @@
 ---
-author: Caroline Möller, Franziska Pleißner, Jakob Wolf, Jann Launer, Marie-Claire Gering
+author: Caroline Möller, Christoph Pels Leusden, Franziska Pleißner, Jakob Wolf, Jann Launer, Marie-Claire Gering, Silke Köhler
 title: The oemof.thermal package
 subtitle: How to use the new thermal components
 institute: Reiner Lemoine Institut, Beuth University of Applied Sciences
 classoption: aspectratio=169
-date: \today
+date: May 13, 2020
 theme: default
 urlcolor: blue
 ---
