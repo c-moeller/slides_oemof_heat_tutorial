@@ -9,6 +9,15 @@ theme: default
 urlcolor: blue
 ---
 
+# Some background information
+
+- oemof.thermal was developed within the project "oemof_heat" by Reiner Lemoine Institut and Beuth University of Applied Sciences
+- Project duration: 07/2017 - 09/2020
+- Currently released: v0.0.2
+- Last release from our side (v0.0.3) will be in Summer 2020
+
+\includegraphics[width=0.5\textwidth]{img/logo_oemof_heat.png}
+
 # The oemof.thermal package
 
 :::::: {.columns}
@@ -20,6 +29,8 @@ urlcolor: blue
   - Compression heat pump and chiller
   - To be released soon: absorption heat pump - [PR #74](https://github.com/oemof/oemof-thermal/pull/74)
 :::
+
+\vspace{2cm}
 
 ::: {.column  width=45%}
 \includegraphics[width=\textwidth]{img/content/oemof_solph_komponente_v3.png}
@@ -39,7 +50,7 @@ in your virtualenv.
 
 \vspace{0.4cm}
 
-In your code, you can import moduls like:
+In your code, you can import modules like:
 
 ~~~python
 from oemof.thermal import concentrating_solar_power
@@ -67,9 +78,9 @@ Find the documentation at [https://oemof-thermal.readthedocs.io](https://oemof-t
 ::: {.column  width=55%}
 - Large-scale sensible heat storage with perfect stratification
 - Two zones with cold ($T_C$) and hot($T_H$) temperature
-- When charging/discharging the storage the thermocline moves down and up
-- Losses through the surface depend on the size of the hot and cold zone
-- For the storage investment mode, you provide a diameter, but leave height and capacity open and set expandable=True.
+- When charging/discharging the storage the thermocline moves down and up.
+- Losses through the surface depend on the size of the hot and cold zone.
+- For the storage investment mode, you provide a diameter, but leave height and capacity open.
 :::
 
 ::: {.column  width=45%}
@@ -85,9 +96,11 @@ Find the documentation at [https://oemof-thermal.readthedocs.io](https://oemof-t
 from oemof import solph
 from oemof.thermal.facades import StratifiedThermalStorage
 
+bth = solph.Bus('heat')
+
 thermal_storage = StratifiedThermalStorage(
     label='thermal_storage',
-    bus=solph.Bus('heat'),
+    bus=bth,
     diameter=2,
     temp_h=95,
     temp_c=60,
@@ -110,10 +123,10 @@ thermal_storage = StratifiedThermalStorage(
 
 :::::: {.columns}
 ::: {.column  width=55%}
-- Explain
-- what's
-- to
-- see
+- Provides the heat of a flat plate collector while considering collector and ambient temperatures
+- The processing of the irradiance data is done by the [pvlib](https://github.com/pvlib/pvlib-python) which calculates the total in-plane irradiance ($E_{Coll}$) according to the location and the azimuth and tilt angle of the collector
+- The optical efficiency and thermal loss parameters (usually part of the technical data sheet) must be provided.
+- Further efficiencies (e.g. for electrical consumptions of pumps or peripheral thermal losses) can be provided.
 :::
 
 ::: {.column  width=45%}
@@ -129,10 +142,13 @@ thermal_storage = StratifiedThermalStorage(
 from oemof import solph
 from oemof.thermal.facades import SolarThermalCollector
 
+bth = solph.Bus(label='thermal')
+bel = solph.Bus(label='electricity')
+
 collector = SolarThermalCollector(
     label='solar_collector',
-    heat_out_bus=solph.Bus(label='thermal'),
-    electricity_in_bus=solph.Bus(label='electricity'),
+    heat_out_bus=bth,
+    electricity_in_bus=bel,
     electrical_consumption=0.02,
     peripheral_losses=0.05,
     aperture_area=1000,
@@ -153,16 +169,16 @@ collector = SolarThermalCollector(
 
 \normalsize
 
-# Solar thermal collector
 
 # Concentrating solar power
 
 :::::: {.columns}
 ::: {.column  width=65%}
-- Explain
-- what's
-- to
-- see
+- Differences to the solar thermal collector:
+  - Consideration of cleanliness
+  - Consideration of an incidence angle modifier which adapts the optical efficiency
+  - Implementation of a second method to determine the heat losses
+  - Only the direct irradiation is considered
 :::
 
 ::: {.column  width=35%}
@@ -176,12 +192,15 @@ collector = SolarThermalCollector(
 
 ~~~python
 from oemof import solph
-from oemof.thermal.facades import Collector
+from oemof.thermal.facades import ParabolicTroughCollector
 
-collector = Collector(
+bth = solph.Bus(label='thermal_bus')
+bel = solph.Bus(label='electrical_bus')
+
+collector = ParabolicTroughCollector(
     label='solar_collector',
-    heat_bus=solph.Bus(label='thermal_bus'),
-    electrical_bus=solph.Bus(label='electrical_bus'),
+    heat_bus=bth,
+    electrical_bus=bel,
     electrical_consumption=0.05,
     additional_losses=0.2,
     aperture_area=1000,
@@ -206,17 +225,16 @@ collector = Collector(
 
 \normalsize
 
-# Concentrating solar power
 
-
-# Compression heat pump and chillers
+# Compression heat pump and chiller
 
 :::::: {.columns}
 ::: {.column  width=75%}
-- Explain
-- what's
-- to
-- see
+- Calculation of the COP based on the temperatures 
+- Define a quality grade to reduce the carnot efficiency
+- Icing can be considered when using the ambient temperature as heat source.
+- This component does not exist as facade.
+- The COP of a compression heat pump is precalculated and then used as an input of a transformer (oemof.solph component).
 :::
 
 ::: {.column  width=25%}
@@ -224,31 +242,52 @@ collector = Collector(
 :::
 ::::::
 
-# Compression heat pump and chillers
+# Compression heat pump and chiller
 
-\small
+\scriptsize
 
 ~~~python
+from oemof.thermal.compression_heatpumps_and_chillers import calc_cops
+from oemof.solph import Transformer
+
+bel = solph.Bus(label='electricity')
+bth = solph.Bus(label='thermal')
+
 COP = calc_cops(
-    temp_high,
-    temp_low,
-    quality_grade,
-    temp_threshold_icing,
-    consider_icing,
-    factor_icing,
-    mode
-)
+    temp_high=40,
+    temp_low=data['ambient_temperature'],
+    quality_grade=0.4,
+    temp_threshold_icing=2,
+    factor_icing=0.8,
+    mode='heat_pump'
+    )
+
+energysystem.add(solph.Transformer(
+    label='heat_pump',
+    inputs={bel: solph.Flow()},
+    outputs={bth: solph.Flow(nominal=25, variable_costs=5)},
+    conversion_factors={b_heat: COP}))
 ~~~
 
 \normalsize
 
-# Compression heat pump and chillers
 
 # Cogeneration: Emission allocation
+
+:::::: {.columns}
+::: {.column  width=45%}
+- The module is designed to hold functions that are helpful when modeling components that generate more than one type of output.
+- Currently there are three different methods that can be used to allocate the emissions to the two outputs of a unit that produces electricity and heat.
+:::
+
+::: {.column  width=55%}
+\includegraphics[width=\textwidth]{img/content/cogeneration.png}
+:::
+::::::
 
 # Questions?
 
 - If you have further questions:
-  - Use the oemof forum: ....
-  - Contact: caroline.moeller@rl-institut.de
+  - Use the oemof forum at the openmod initiative: [https://forum.openmod-initiative.org/tags/oemof](https://forum.openmod-initiative.org/tags/oemof) 
+  - Contact: [caroline.moeller@rl-institut.de](caroline.moeller@rl-institut.de)
 
